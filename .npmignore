@@ -1,0 +1,42 @@
+# 源代码
+src/
+examples/
+docs/
+public/
+
+# 配置文件
+.vscode/
+.idea/
+*.log
+node_modules/
+
+# 开发文件
+vite.config.ts
+tsconfig.json
+tsconfig.node.json
+.gitignore
+.eslintrc.cjs
+.prettierrc
+index.html
+
+# 测试文件
+tests/
+__tests__/
+*.spec.ts
+*.test.ts
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# 其他
+.DS_Store
+*.local
+.env
+.env.*
+
+# 只保留必要的文件
+# package.json
+# README.md
+# LICENSE
+# dist/
