@@ -4,8 +4,17 @@
 name: Publish to NPM
 
 on:
+  # 创建 Release 时自动触发
   release:
     types: [created]
+  # 支持手动触发
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: '试运行（不实际发布）'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   publish:
@@ -40,6 +49,12 @@ jobs:
 
       # 发布到 npm
       - name: Publish to npm
-        run: pnpm publish --no-git-checks --access public
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "🔍 试运行模式，跳过实际发布"
+            pnpm publish --dry-run --no-git-checks --access public
+          else
+            pnpm publish --no-git-checks --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
