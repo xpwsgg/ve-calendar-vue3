@@ -1,33 +1,45 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+# 当创建 Release 时自动发布到 npm
+# 使用前需要在 GitHub 仓库 Settings -> Secrets -> Actions 中配置 NPM_TOKEN
 
-name: Node.js Package
+name: Publish to NPM
 
 on:
   release:
     types: [created]
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
+      # 检出代码
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm test
 
-  publish-npm:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      # 安装 pnpm
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      # 设置 Node.js 环境
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm publish
+          cache: pnpm
+
+      # 安装依赖
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 类型检查
+      - name: Type check
+        run: pnpm typecheck
+
+      # 构建库
+      - name: Build library
+        run: pnpm build:lib
+
+      # 发布到 npm
+      - name: Publish to npm
+        run: pnpm publish --no-git-checks --access public
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
