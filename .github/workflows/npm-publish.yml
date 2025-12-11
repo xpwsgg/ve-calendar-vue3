@@ -28,16 +28,23 @@ jobs:
         with:
           version: 9
 
-      # 设置 Node.js 环境
+      # 设置 Node.js 环境（禁用缓存避免旧依赖问题）
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
-          cache: pnpm
 
       # 安装依赖
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # 调试：显示安装的版本
+      - name: Show installed versions
+        run: |
+          echo "vue-tsc version:"
+          pnpm list vue-tsc
+          echo "typescript version:"
+          pnpm list typescript
 
       # 类型检查
       - name: Type check
